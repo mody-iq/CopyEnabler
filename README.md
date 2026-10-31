@@ -20,10 +20,15 @@ The package is built with `THEOS_PACKAGE_SCHEME=roothide`, so paths live under
 `/var/jb`. On a rootless or rootful jailbreak, rebuild with
 `THEOS_PACKAGE_SCHEME=rootless` or unset (see `Makefile`).
 
-Binaries are linked with `-Wl,-no_fixup_chains`. LLVM's Mach-O linker emits
-chained fixups by default, and RootHide's loader cannot read that format from a
-`.jbroot` path: it fails with `bad bind opcode 0x00` and the preference bundle
-never loads. Forcing the classic `LC_DYLD_INFO` fixups avoids this.
+Binaries are built with the RootHide toolchain (`roothide/theos` plus its
+`iOSToolchain`, which uses Apple `ld64`). That linker emits the correct `arm64e`
+CPU subtype natively, so no post-link patching of the Mach-O header is needed.
+Do not add custom `clang`/`ld` wrapper scripts or rewrite the CPU subtype after
+linking: doing so corrupts the binary and the preference bundle then fails to
+load with `bad bind opcode 0x00`.
+
+Theos runs `strip -x` and then signs with `ldid -S` as part of the normal build;
+that order is correct and must not be bypassed.
 
 There are no third-party dependencies: the only requirement is the substrate
 (`mobilesubstrate`). Preferences are stored by a small self-contained class

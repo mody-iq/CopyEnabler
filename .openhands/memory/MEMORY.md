@@ -47,17 +47,22 @@ Produces `packages/com.modyiq.copyenabler_<ver>_iphoneos-arm64e.deb`.
 * Do **not** use `@finally` in `Tweak.xm`: Logos compiles it as ObjC++ and it pulls
   in `std::terminate` / `__cxa_begin_catch`, which fail to link here.
 
-## Chained fixups vs RootHide (important)
-* LLVM's Mach-O linker (lld) emits `LC_DYLD_CHAINED_FIXUPS` for arm64/arm64e by
-  default, while arm64e gets classic `LC_DYLD_INFO`. RootHide's loader cannot read
-  chained fixups from a `.jbroot` path — the preference bundle fails with
-  `dlopen(...) bad bind opcode 0x00` and never loads.
-* Fix: `CopyEnabler_LDFLAGS = -Wl,-no_fixup_chains` (and the same for the prefs
-  bundle). Verify with `llvm-lipo -thin <arch>` then `llvm-otool -l | grep
-  LC_DYLD_CHAINED_FIXUPS` (expect 0) and
-  `llvm-objdump --macho --bind` (expect a clean list, no error).
-* `llvm-otool` in LLVM 19 dropped `-bind`/`-lazy_bind`; use
-  `llvm-objdump --macho --bind/--lazy-bind` instead.
+## Toolchain: use the RootHide toolchain, never patch Mach-O headers
+* Build with `roothide/theos` + its `iOSToolchain` (Apple `ld64` 609). That linker
+  emits the correct `arm64e` CPU subtype (2) natively for `-arch arm64e`.
+* Do NOT add clang/ld wrapper scripts or rewrite the CPU subtype after linking.
+  A previous session used lld plus a `macho_arch_patch.py` post-link hack; that
+  left binaries whose fixup data dyld could not read, giving
+  `dlopen(...): bad bind opcode 0x00` and a preference bundle that never loaded.
+* The flag `-Wl,-no_fixup_chains` is lld-only. Apple `ld64` rejects it
+  (`ld: unknown option`), so it must not be in the Makefiles.
+* Theos order is correct as-is: link -> dsymutil -> `strip -x` -> merge -> `ldid -S`.
+  Do not disable stripping or sign manually.
+* Verify a build with: `lipo -thin <arch>` then `otool -h` (arm64e must show
+  subtype 2) and `otool -l | grep LC_DYLD_CHAINED_FIXUPS`.
+* Setup needs: `apt install clang-19 lld-19 llvm-19 rsync libplist-utils`, then
+  clone roothide/theos, `git submodule update --init --recursive`, install the
+  `iOSToolchain-$(uname -m)` tarball, and copy an SDK into `$THEOS/sdks`.
 
 ## Verification habit
 The injected JS is a string built with `stringWithFormat:`. It is easy to emit
