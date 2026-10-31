@@ -10,6 +10,9 @@ TWEAK_NAME = CopyEnabler
 CopyEnabler_FILES = Tweak.xm shared/CEPreferences.m
 CopyEnabler_CFLAGS = -fobjc-arc -I$(THEOS_PROJECT_DIR)/shared
 CopyEnabler_FRAMEWORKS = UIKit WebKit
+# RootHide's loader cannot parse lld's chained-fixup slice (it reports a bogus
+# bind opcode), so force the classic LC_DYLD_INFO format.
+CopyEnabler_LDFLAGS = -Wl,-no_fixup_chains
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

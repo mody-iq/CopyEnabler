@@ -9,6 +9,7 @@ CopyEnablerPrefs_FILES = CERootListController.m CESitesListController.m CELocali
 CopyEnablerPrefs_FRAMEWORKS = UIKit
 CopyEnablerPrefs_PRIVATE_FRAMEWORKS = Preferences
 CopyEnablerPrefs_INSTALL_PATH = /Library/PreferenceBundles
+CopyEnablerPrefs_LDFLAGS = -Wl,-no_fixup_chains
 CopyEnablerPrefs_CFLAGS = -fobjc-arc -I$(THEOS_PROJECT_DIR)/shared
 
 include $(THEOS_MAKE_PATH)/bundle.mk

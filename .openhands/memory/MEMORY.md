@@ -47,6 +47,18 @@ Produces `packages/com.modyiq.copyenabler_<ver>_iphoneos-arm64e.deb`.
 * Do **not** use `@finally` in `Tweak.xm`: Logos compiles it as ObjC++ and it pulls
   in `std::terminate` / `__cxa_begin_catch`, which fail to link here.
 
+## Chained fixups vs RootHide (important)
+* LLVM's Mach-O linker (lld) emits `LC_DYLD_CHAINED_FIXUPS` for arm64/arm64e by
+  default, while arm64e gets classic `LC_DYLD_INFO`. RootHide's loader cannot read
+  chained fixups from a `.jbroot` path — the preference bundle fails with
+  `dlopen(...) bad bind opcode 0x00` and never loads.
+* Fix: `CopyEnabler_LDFLAGS = -Wl,-no_fixup_chains` (and the same for the prefs
+  bundle). Verify with `llvm-lipo -thin <arch>` then `llvm-otool -l | grep
+  LC_DYLD_CHAINED_FIXUPS` (expect 0) and
+  `llvm-objdump --macho --bind` (expect a clean list, no error).
+* `llvm-otool` in LLVM 19 dropped `-bind`/`-lazy_bind`; use
+  `llvm-objdump --macho --bind/--lazy-bind` instead.
+
 ## Verification habit
 The injected JS is a string built with `stringWithFormat:`. It is easy to emit
 invalid JS (e.g. CSS placed outside the string quotes). Extract the template and

@@ -20,6 +20,11 @@ The package is built with `THEOS_PACKAGE_SCHEME=roothide`, so paths live under
 `/var/jb`. On a rootless or rootful jailbreak, rebuild with
 `THEOS_PACKAGE_SCHEME=rootless` or unset (see `Makefile`).
 
+Binaries are linked with `-Wl,-no_fixup_chains`. LLVM's Mach-O linker emits
+chained fixups by default, and RootHide's loader cannot read that format from a
+`.jbroot` path: it fails with `bad bind opcode 0x00` and the preference bundle
+never loads. Forcing the classic `LC_DYLD_INFO` fixups avoids this.
+
 There are no third-party dependencies: the only requirement is the substrate
 (`mobilesubstrate`). Preferences are stored by a small self-contained class
 (`shared/CEPreferences.m`) that reads the mobile user's preference plist directly,
