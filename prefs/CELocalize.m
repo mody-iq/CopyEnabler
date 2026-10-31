@@ -1,7 +1,5 @@
 #import "CELocalize.h"
-#import <Cephei/HBPreferences.h>
-
-static NSString *const kPrefDomain = @"com.modyiq.copyenabler";
+#import "CEPreferences.h"
 
 static NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> *CETable(void) {
     static NSDictionary *table = nil;
@@ -70,9 +68,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> *CETable
 }
 
 NSString *CELanguageCode(void) {
-    HBPreferences *prefs = [[HBPreferences alloc] initWithIdentifier:kPrefDomain];
-    [prefs registerDefaults:@{ @"Language": @"auto" }];
-    NSString *selected = [prefs objectForKey:@"Language"] ?: @"auto";
+    [CEPreferences.shared registerDefaults:@{ @"Language": @"auto" }];
+    NSString *selected = [CEPreferences.shared objectForKey:@"Language"] ?: @"auto";
     if ([selected isEqualToString:@"auto"]) {
         NSString *system = [NSLocale preferredLanguages].firstObject ?: @"en";
         return [system hasPrefix:@"ar"] ? @"ar" : @"en";

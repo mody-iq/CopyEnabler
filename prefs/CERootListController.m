@@ -1,18 +1,14 @@
 #import "CERootListController.h"
 #import "CESitesListController.h"
 #import "CELocalize.h"
-#import <Cephei/HBPreferences.h>
+#import "CEPreferences.h"
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSListItemsController.h>
 
-static NSString *const kPrefDomain = @"com.modyiq.copyenabler";
-
-static HBPreferences *Prefs(void) {
-    static HBPreferences *p = nil;
+static CEPreferences *Prefs(void) {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        p = [[HBPreferences alloc] initWithIdentifier:kPrefDomain];
-        [p registerDefaults:@{
+        [CEPreferences.shared registerDefaults:@{
             @"Enabled": @YES,
             @"EnableSelection": @YES,
             @"EnableCopyPaste": @YES,
@@ -21,7 +17,7 @@ static HBPreferences *Prefs(void) {
             @"Language": @"auto"
         }];
     });
-    return p;
+    return CEPreferences.shared;
 }
 
 @implementation CERootListController
@@ -137,8 +133,7 @@ static HBPreferences *Prefs(void) {
 }
 
 - (void)notifyChange {
-    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
-                                         CFSTR("com.modyiq.copyenabler/changed"), NULL, NULL, YES);
+    [Prefs() reload];
 }
 
 - (void)shareLogs {

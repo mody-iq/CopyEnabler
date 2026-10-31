@@ -7,10 +7,9 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = CopyEnabler
 
-CopyEnabler_FILES = Tweak.xm
-CopyEnabler_CFLAGS = -fobjc-arc
+CopyEnabler_FILES = Tweak.xm shared/CEPreferences.m
+CopyEnabler_CFLAGS = -fobjc-arc -I$(THEOS_PROJECT_DIR)/shared
 CopyEnabler_FRAMEWORKS = UIKit WebKit
-CopyEnabler_EXTRA_FRAMEWORKS = Cephei
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

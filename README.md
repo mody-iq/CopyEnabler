@@ -14,11 +14,16 @@ views (GitHub, documentation sites, and so on).
 | iOS | 18.7 |
 | Jailbreak | RootHide (Relaxin v0.5.5) |
 | Architectures | `arm64` + `arm64e` (fat binary) |
-| Framework | Theos, Logos, Objective-C, WebKit, Cephei `HBPreferences` |
+| Framework | Theos, Logos, Objective-C, WebKit |
 
 The package is built with `THEOS_PACKAGE_SCHEME=roothide`, so paths live under
 `/var/jb`. On a rootless or rootful jailbreak, rebuild with
 `THEOS_PACKAGE_SCHEME=rootless` or unset (see `Makefile`).
+
+There are no third-party dependencies: the only requirement is the substrate
+(`mobilesubstrate`). Preferences are stored by a small self-contained class
+(`shared/CEPreferences.m`) that reads the mobile user's preference plist directly,
+so Cephei is not needed.
 
 ## Install
 
@@ -81,7 +86,11 @@ Makefile                     tweak build rules
 control                      package metadata
 CopyEnabler.plist            ElleKit/roothide filter (com.apple.UIKit)
 Tweak.xm                     hooking + JavaScript/CSS injection
+shared/CEPreferences.[hm]    standalone preference store (no Cephei)
 prefs/                       preference bundle (EN/AR UI)
 layout/                      PreferenceLoader entry
 debs/                        prebuilt package
 ```
+
+Preferences live in
+`/var/mobile/Library/Preferences/com.modyiq.copyenabler.plist`.

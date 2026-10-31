@@ -35,9 +35,15 @@ Produces `packages/com.modyiq.copyenabler_<ver>_iphoneos-arm64e.deb`.
   `WKUserScriptInjectionTimeAtDocumentEnd`, `forMainFrameOnly:NO`.
 * Injected JS is idempotent via a `window.__CopyEnablerInstalled__` marker and
   checks a hostname exclusion list before applying.
-* Preferences use Cephei `HBPreferences` (`com.modyiq.copyenabler`) + a
-  PreferenceLoader bundle with a hand-built `PSListController` (EN/AR strings live
-  in `prefs/CELocalize.m`).
+* Preferences are stored by `shared/CEPreferences.[hm]`, a self-contained
+  replacement for Cephei's `HBPreferences` (compiled into both the tweak and the
+  bundle). It reads/writes `/var/mobile/Library/Preferences/com.modyiq.copyenabler.plist`
+  directly and syncs over the Darwin notification
+  `com.modyiq.copyenabler/changed`. `control` therefore depends only on
+  `mobilesubstrate` — Cephei is NOT required. Both Makefiles pass
+  `-I$(THEOS_PROJECT_DIR)/shared` and list the shared .m in their FILES.
+* The UI is a PreferenceLoader bundle with a hand-built `PSListController`
+  (EN/AR strings live in `prefs/CELocalize.m`).
 * Do **not** use `@finally` in `Tweak.xm`: Logos compiles it as ObjC++ and it pulls
   in `std::terminate` / `__cxa_begin_catch`, which fail to link here.
 

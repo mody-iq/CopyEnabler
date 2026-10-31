@@ -1,16 +1,13 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
-#import <Cephei/HBPreferences.h>
+#import "CEPreferences.h"
 
-static NSString *const kPrefDomain = @"com.modyiq.copyenabler";
 static NSString *const kMarker = @"__CopyEnablerInstalled__";
 
-static HBPreferences *Prefs(void) {
-    static HBPreferences *p = nil;
+static CEPreferences *Prefs(void) {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        p = [[HBPreferences alloc] initWithIdentifier:kPrefDomain];
-        [p registerDefaults:@{
+        [CEPreferences.shared registerDefaults:@{
             @"Enabled": @YES,
             @"EnableSelection": @YES,
             @"EnableCopyPaste": @YES,
@@ -18,7 +15,7 @@ static HBPreferences *Prefs(void) {
             @"ExcludedSites": @[]
         }];
     });
-    return p;
+    return CEPreferences.shared;
 }
 
 static NSMutableArray<NSString *> *DebugLog(void) {
@@ -67,7 +64,7 @@ static void CELog(NSString *fmt, ...) {
 }
 
 static NSString *CEBuildScript(void) {
-    HBPreferences *prefs = Prefs();
+    CEPreferences *prefs = Prefs();
     if (![prefs boolForKey:@"Enabled"]) return nil;
 
     BOOL selection = [prefs boolForKey:@"EnableSelection"];
