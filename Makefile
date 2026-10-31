@@ -7,14 +7,11 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = CopyEnabler
 
-CopyEnabler_FILES = Tweak.xm shared/CEPreferences.m
-CopyEnabler_CFLAGS = -fobjc-arc -I$(THEOS_PROJECT_DIR)/shared
+CopyEnabler_FILES = Tweak.xm
+CopyEnabler_CFLAGS = -fobjc-arc
 CopyEnabler_FRAMEWORKS = UIKit WebKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-
-SUBPROJECTS += prefs
-include $(THEOS_MAKE_PATH)/aggregate.mk
 
 # This workspace is setgid, so staged directories inherit mode 2755 and dpkg
 # rejects the control directory. Drop the inherited bit only; file contents and

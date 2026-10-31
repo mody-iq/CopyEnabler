@@ -1,8 +1,8 @@
 Package: com.modyiq.copyenabler
 Name: CopyEnabler
-Version: 1.0.3
+Version: 2.0.0
 Architecture: iphoneos-arm64
-Description: Unrestrict text selection, copy, paste and long-press menus in every WKWebView (Safari, in-app browsers, GitHub). Bilingual English/Arabic preferences.
+Description: Unrestrict text selection, copy, paste and long-press menus in every WKWebView. No settings, works immediately after install.
 Maintainer: mody-iq
 Author: mody-iq
 Section: Tweaks
