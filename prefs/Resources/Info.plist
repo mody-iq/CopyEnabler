@@ -1,0 +1,11 @@
+{
+    CFBundleDevelopmentRegion = "en";
+    CFBundleExecutable = "CopyEnablerPrefs";
+    CFBundleIdentifier = "com.modyiq.copyenabler.prefs";
+    CFBundleInfoDictionaryVersion = "6.0";
+    CFBundleName = "CopyEnablerPrefs";
+    CFBundlePackageType = "BNDL";
+    CFBundleShortVersionString = "1.0.0";
+    CFBundleVersion = "1.0.0";
+    NSPrincipalClass = "CERootListController";
+}

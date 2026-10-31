@@ -1,0 +1,10 @@
+{
+    entry = {
+        bundle = "CopyEnablerPrefs";
+        cell = PSLinkCell;
+        detail = "CERootListController";
+        icon = "icon.png";
+        isController = 1;
+        label = "CopyEnabler";
+    };
+}
