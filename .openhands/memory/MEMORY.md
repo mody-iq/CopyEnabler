@@ -47,6 +47,25 @@ Produces `packages/com.modyiq.copyenabler_<ver>_iphoneos-arm64e.deb`.
 * Do **not** use `@finally` in `Tweak.xm`: Logos compiles it as ObjC++ and it pulls
   in `std::terminate` / `__cxa_begin_catch`, which fail to link here.
 
+## Product scope: keep the tweak minimal (user request)
+* The user explicitly wants a single-purpose tweak: unrestrict copy/paste/selection
+  in WKWebView. No settings UI, no preference bundle, no excluded-sites list,
+  no logging, no debug menu. Install and respring only.
+* A preference bundle is a second Mach-O that dyld must load, so it doubles the
+  failure surface (see the bad-bind-opcode history). Only add one if asked.
+
+## Crash-safe hooking rules learned here
+* Never hook `WKWebViewConfiguration -init`: it runs during object init, touches
+  the lazily created `userContentController`, and fires for WebKit's own internal
+  configurations. Inject from the WKWebView initialisers instead.
+* The filter matches `com.apple.UIKit`, but many processes load UIKit without
+  linking WebKit. Guard the constructor with `objc_getClass("WKWebView")` and only
+  `%init` the hook group when it exists, or the tweak crashes those processes.
+* Keep `%ctor` trivial. No preference reads, no file I/O, no notification
+  observers, no NSLog. Wrap it in @try.
+* Corrupt binaries hide crashes: 1.0.2 never loaded (bad bind opcode) so the crash
+  in the code stayed invisible until 1.0.3 produced a valid dylib.
+
 ## Toolchain: use the RootHide toolchain, never patch Mach-O headers
 * Build with `roothide/theos` + its `iOSToolchain` (Apple `ld64` 609). That linker
   emits the correct `arm64e` CPU subtype (2) natively for `-arch arm64e`.
